@@ -15,14 +15,21 @@ And keys equals () method will be used to identify correct key value pair in Has
 public class HashTable {
 	class Node {
 	    Node next;
-	    HashEntry entry;
+	    //HashEntry entry;
+	    Object key;
+	    Object value;
 	 
-	    public Node(HashEntry entry) {
-	        this.entry = entry;
+	    public Node(Object key, Object value) {
+	        this.key = key;
+	        this.value = value;
 	        next = null;
 	    }
+	    
+	    public String toString() {
+			return "[" + key + "," + value + "]";
+		}
 	}//Node
-	
+/*	
 	class HashEntry {
 		Object key;
 		Object value;
@@ -36,7 +43,7 @@ public class HashTable {
 			return "[" + key + "," + value + "]";
 		}
 	}//HashEntry
-	
+*/	
 	private Node[] table = null;
 	private int tableSize = 0;
 	private int DEFAULT_TABLE_SIZE = 32;
@@ -72,7 +79,7 @@ public class HashTable {
         } else {
         	Node curr = table[pos];
         	while (true) {
-        		if (curr.entry.key.equals(key)) {
+        		if (curr.key.equals(key)) {
         			return true;
         		}
         		if (curr.next == null) {
@@ -88,7 +95,7 @@ public class HashTable {
 		for (int i = 0; i < table.length; i++) {
 			Node node = table[i];
 			while (node != null) {
-				if (value.equals(node.entry.value)) {
+				if (value.equals(node.value)) {
 					return true;
 				}
 				node = node.next;
@@ -105,7 +112,7 @@ public class HashTable {
 		for (int i = 0; i < table.length; i++) {
 			Node node = table[i];
 			while (node != null) {
-				values.add(node.entry.value);
+				values.add(node.value);
 				node = node.next;
 			}
 		}
@@ -123,8 +130,8 @@ public class HashTable {
         } else {
         	Node curr = table[pos];
         	while (true) {
-        		if (curr.entry.key.equals(key)) {
-        			return curr.entry.value;
+        		if (curr.key.equals(key)) {
+        			return curr.value;
         		}
         		if (curr.next == null) {
         			break;
@@ -148,7 +155,7 @@ public class HashTable {
 		for (int i = 0; i < table.length; i++) {           
             Node node = table[i];
             while(node != null) {
-                keys.add(node.entry.key);
+                keys.add(node.key);
                 node = node.next;
             }
         }
@@ -162,7 +169,7 @@ public class HashTable {
 	*/
 	public Object put(Object key, Object value) {
         int pos = getHash(key);        
-        Node node = new Node(new HashEntry(key, value));                
+        Node node = new Node(key, value);                
         if (table[pos] == null) {
             table[pos] = node;
             size++;
@@ -171,9 +178,9 @@ public class HashTable {
         	Object ret = null;
         	Node curr = table[pos];
         	while (true) {
-        		if (curr.entry.key.equals(key)) {
-        			ret = curr.entry.value;
-        			curr.entry.value = value;
+        		if (curr.key.equals(key)) {
+        			ret = curr.value;
+        			curr.value = value;
         			return ret;
         		}
         		if (curr.next == null) {
@@ -205,8 +212,8 @@ public class HashTable {
         	Node curr = table[pos];
         	Node prev = table[pos];
         	while (true) {
-        		if (curr.entry.key.equals(key)) {
-        			Object ret = curr.entry.value;
+        		if (curr.key.equals(key)) {
+        			Object ret = curr.value;
         			if (curr == table[pos]) {
         				table[pos] = curr.next;
         			} else {
@@ -252,7 +259,7 @@ public class HashTable {
             System.out.print ("Bucket " + i + ":  ");             
             Node node = table[i];
             while(node != null) {
-                System.out.print(node.entry.toString() +"; ");
+                System.out.print(node.toString() +"; ");
                 node = node.next;
             }
             System.out.println();
