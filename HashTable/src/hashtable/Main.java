@@ -1,5 +1,7 @@
 package hashtable;
 
+import java.util.Enumeration;
+
 public class Main {
 	
 	public static void main(String[] args) {
@@ -12,6 +14,7 @@ public class Main {
 		hashtable.put(12, "key is 12 again");
 		hashtable.put(22, "key is 22 again");
 		hashtable.put(-1, "key is -1");
+		hashtable.put(-11,"key is -11");
 		hashtable.put(0, "key is 0");
 		
 		hashtable.printHashTable();
@@ -28,5 +31,16 @@ public class Main {
 		hashtable.remove(12);
 		
 		hashtable.printHashTable();
+		
+		Enumeration en;
+		en = hashtable.keys();
+		while (en.hasMoreElements()) {
+			System.out.println("Key: " + en.nextElement());
+		}
+		
+		en = hashtable.elements();
+		while (en.hasMoreElements()) {
+			System.out.println("Value: " + en.nextElement());
+		}
 	}
 }

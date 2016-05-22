@@ -15,7 +15,6 @@ And keys equals () method will be used to identify correct key value pair in Has
 public class HashTable {
 	class Node {
 	    Node next;
-	    //HashEntry entry;
 	    Object key;
 	    Object value;
 	 
@@ -29,21 +28,7 @@ public class HashTable {
 			return "[" + key + "," + value + "]";
 		}
 	}//Node
-/*	
-	class HashEntry {
-		Object key;
-		Object value;
-		
-		public HashEntry(Object key, Object value) {
-	        this.key = key;
-	        this.value = value;
-	    }
-		
-		public String toString() {
-			return "[" + key + "," + value + "]";
-		}
-	}//HashEntry
-*/	
+	
 	private Node[] table = null;
 	private int tableSize = 0;
 	private int DEFAULT_TABLE_SIZE = 32;
@@ -108,15 +93,7 @@ public class HashTable {
 	 * Returns an enumeration of the values contained in the hash table.
 	 */
 	public Enumeration elements() {
-		List values = new LinkedList();
-		for (int i = 0; i < table.length; i++) {
-			Node node = table[i];
-			while (node != null) {
-				values.add(node.value);
-				node = node.next;
-			}
-		}
-		return Collections.enumeration(values);
+		return new HashTableValuesEnumeration();
 	}
 	
 	/*
@@ -151,15 +128,7 @@ public class HashTable {
 	}
 	
 	public Enumeration keys( ) {
-		List keys = new LinkedList();
-		for (int i = 0; i < table.length; i++) {           
-            Node node = table[i];
-            while(node != null) {
-                keys.add(node.key);
-                node = node.next;
-            }
-        }
-		return Collections.enumeration(keys);
+		return new HashTableKeysEnumeration();
 	}
 
 	/*
@@ -264,6 +233,98 @@ public class HashTable {
             }
             System.out.println();
         }
-    }  
+    }
+	
+	class HashTableKeysEnumeration implements Enumeration {
+		int currBasket = -1;
+		Node currNode = null;
+		
+		@Override
+		public boolean hasMoreElements() {
+			if (currBasket == table.length -1 && currNode.next == null) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		@Override
+		public Object nextElement() {
+			if (currBasket == -1) {
+				int pos = 0;
+				while(pos <= table.length-1) {
+					if (table[pos] == null) {
+						pos++;
+					} else {
+						break;
+					}
+				}
+				currBasket = pos;
+				currNode = table[pos];
+			} else {
+				if (currNode.next != null) {
+					currNode = currNode.next;
+				} else {
+					int pos = currBasket + 1;
+					while(pos <= table.length-1) {
+						if (table[pos] == null) {
+							pos++;
+						} else {
+							break;
+						}
+					}
+					currBasket = pos;
+					currNode = table[pos];
+				}
+			}
+			return currNode.key;
+		}
+	}//HashTableKeysEnumeration
+	
+	class HashTableValuesEnumeration implements Enumeration {
+		int currBasket = -1;
+		Node currNode = null;
+		
+		@Override
+		public boolean hasMoreElements() {
+			if (currBasket == table.length -1 && currNode.next == null) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		@Override
+		public Object nextElement() {
+			if (currBasket == -1) {
+				int pos = 0;
+				while(pos <= table.length-1) {
+					if (table[pos] == null) {
+						pos++;
+					} else {
+						break;
+					}
+				}
+				currBasket = pos;
+				currNode = table[pos];
+			} else {
+				if (currNode.next != null) {
+					currNode = currNode.next;
+				} else {
+					int pos = currBasket + 1;
+					while(pos <= table.length-1) {
+						if (table[pos] == null) {
+							pos++;
+						} else {
+							break;
+						}
+					}
+					currBasket = pos;
+					currNode = table[pos];
+				}
+			}
+			return currNode.value;
+		}
+	}//HashTableValuesEnumeration
 }
 
