@@ -1,0 +1,262 @@
+package hashtable;
+
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+
+/*
+What will happen if two different HashMap key objects have same hashcode?
+They will be stored in same bucket but no next node of linked list. 
+And keys equals () method will be used to identify correct key value pair in HashMap.
+*/
+
+
+public class HashTable {
+	class Node {
+	    Node next;
+	    HashEntry entry;
+	 
+	    public Node(HashEntry entry) {
+	        this.entry = entry;
+	        next = null;
+	    }
+	}//Node
+	
+	class HashEntry {
+		Object key;
+		Object value;
+		
+		public HashEntry(Object key, Object value) {
+	        this.key = key;
+	        this.value = value;
+	    }
+		
+		public String toString() {
+			return "[" + key + "," + value + "]";
+		}
+	}//HashEntry
+	
+	private Node[] table = null;
+	private int tableSize = 0;
+	private int DEFAULT_TABLE_SIZE = 32;
+	private int size = 0;
+	
+	public HashTable() {
+		tableSize = DEFAULT_TABLE_SIZE;
+		table = new Node[tableSize];
+	}
+	
+	public HashTable(int size) {
+		table = new Node[size];
+	}
+	
+	//public HashTable(int size, float fillRatio) {
+	//}
+	
+	//public HashTable(Object key, Object value) {
+	//}
+	
+	public void clear( ) {
+		table = new Node[tableSize];
+	}
+	
+	//public Object clone( ) {
+	//	return null;
+	//}
+	
+	public boolean containsKey(Object key) {
+		int pos = getHash(key);                       
+        if (table[pos] == null) {
+            return false;
+        } else {
+        	Node curr = table[pos];
+        	while (true) {
+        		if (curr.entry.key.equals(key)) {
+        			return true;
+        		}
+        		if (curr.next == null) {
+        			break;
+        		}
+        		curr = curr.next;
+        	}
+        	return false;
+        }
+	}
+	
+	public boolean containsValue(Object value) {
+		for (int i = 0; i < table.length; i++) {
+			Node node = table[i];
+			while (node != null) {
+				if (value.equals(node.entry.value)) {
+					return true;
+				}
+				node = node.next;
+			}
+		}
+		return false;
+	}
+	
+	/*
+	 * Returns an enumeration of the values contained in the hash table.
+	 */
+	public Enumeration elements() {
+		List values = new LinkedList();
+		for (int i = 0; i < table.length; i++) {
+			Node node = table[i];
+			while (node != null) {
+				values.add(node.entry.value);
+				node = node.next;
+			}
+		}
+		return Collections.enumeration(values);
+	}
+	
+	/*
+	 * Returns the object that contains the value associated with key. 
+	 * If key is not in the hash table, a null object is returned.
+	 */
+	public Object get(Object key) {
+		int pos = getHash(key);                       
+        if (table[pos] == null) {
+            return null;
+        } else {
+        	Node curr = table[pos];
+        	while (true) {
+        		if (curr.entry.key.equals(key)) {
+        			return curr.entry.value;
+        		}
+        		if (curr.next == null) {
+        			break;
+        		}
+        		curr = curr.next;
+        	}
+        	return null;
+        }
+	}
+	
+	/*
+	Returns true if the hash table is empty; 
+	returns false if it contains at least one key.
+	*/
+	public boolean isEmpty( ) {
+		return size == 0;
+	}
+	
+	public Enumeration keys( ) {
+		List keys = new LinkedList();
+		for (int i = 0; i < table.length; i++) {           
+            Node node = table[i];
+            while(node != null) {
+                keys.add(node.entry.key);
+                node = node.next;
+            }
+        }
+		return Collections.enumeration(keys);
+	}
+
+	/*
+	Inserts a key and a value into the hash table. 
+	Returns null if key isn't already in the hash table; 
+	returns the previous value associated with key if key is already in the hash table.
+	*/
+	public Object put(Object key, Object value) {
+        int pos = getHash(key);        
+        Node node = new Node(new HashEntry(key, value));                
+        if (table[pos] == null) {
+            table[pos] = node;
+            size++;
+            return null;
+        } else {
+        	Object ret = null;
+        	Node curr = table[pos];
+        	while (true) {
+        		if (curr.entry.key.equals(key)) {
+        			ret = curr.entry.value;
+        			curr.entry.value = value;
+        			return ret;
+        		}
+        		if (curr.next == null) {
+        			break;
+        		}
+        		curr = curr.next;
+        	}
+        	curr.next = node;
+        	size++;
+        	return ret;
+        }    
+	}
+	/*
+	 * Increases the size of the hash table and rehashes all of its keys. 
+	 * */
+	public	void rehash( ) {
+		
+	}
+
+	/*
+	 * Removes key and its value. Returns the value associated with key. 
+	 * If key is not in the hash table, a null object is returned.
+	 * */
+	public 	Object remove(Object key) {
+		int pos = getHash(key);                       
+        if (table[pos] == null) {
+            return null;
+        } else {
+        	Node curr = table[pos];
+        	Node prev = table[pos];
+        	while (true) {
+        		if (curr.entry.key.equals(key)) {
+        			Object ret = curr.entry.value;
+        			if (curr == table[pos]) {
+        				table[pos] = curr.next;
+        			} else {
+        				prev.next = curr.next;
+        			}        			
+        			return ret;
+        		}
+        		if (curr.next == null) {
+        			break;
+        		}
+        		prev = curr;
+        		curr = curr.next;
+        	}
+        	return null;
+        }
+	}
+	
+	/*
+	 * Returns the number of entries in the hash table.
+	 * */
+	public	int size( ) {
+		return size;
+	}
+
+	/*
+	* Returns the string equivalent of a hash table.
+	* */
+	public	String toString( ) {
+		return "";
+	}
+	
+	private int getHash(Object object ) {
+        int hash = object.hashCode( ) % table.length;
+        if (hash < 0) {
+            hash += table.length;
+        }
+        return hash;
+    }
+	
+	public void printHashTable () {
+        System.out.println();
+        for (int i = 0; i < table.length; i++) {
+            System.out.print ("Bucket " + i + ":  ");             
+            Node node = table[i];
+            while(node != null) {
+                System.out.print(node.entry.toString() +"; ");
+                node = node.next;
+            }
+            System.out.println();
+        }
+    }  
+}
+
