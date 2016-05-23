@@ -1,9 +1,6 @@
 package hashtable;
 
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
 
 /*
 What will happen if two different HashMap key objects have same hashcode?
