@@ -40,6 +40,7 @@ public class HashTable {
 	}
 	
 	public HashTable(int size) {
+		tableSize = size;
 		table = new Node[size];
 	}
 	
@@ -63,12 +64,9 @@ public class HashTable {
             return false;
         } else {
         	Node curr = table[pos];
-        	while (true) {
+        	while (curr != null) {
         		if (curr.key.equals(key)) {
         			return true;
-        		}
-        		if (curr.next == null) {
-        			break;
         		}
         		curr = curr.next;
         	}

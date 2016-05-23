@@ -22,6 +22,7 @@ public class Main {
 		System.out.println("Size: " + hashtable.size());
 		System.out.println("Get key 22: " + hashtable.get(22));
 		
+		System.out.println("Contains key 12: " + hashtable.containsKey(12));
 		System.out.println("Contains key 22: " + hashtable.containsKey(22));
 		System.out.println("Contains key 99: " + hashtable.containsKey(99));
 		
