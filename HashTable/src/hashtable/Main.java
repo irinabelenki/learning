@@ -16,6 +16,10 @@ public class Main {
 		hashtable.put(-1, "key is -1");
 		hashtable.put(-11,"key is -11");
 		hashtable.put(0, "key is 0");
+				
+		hashtable.printHashTable();
+		
+		hashtable.put(18, "key is 18");
 		
 		hashtable.printHashTable();
 		

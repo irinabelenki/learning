@@ -27,12 +27,13 @@ public class HashTable {
 	}//Node
 	
 	private Node[] table = null;
-	private int tableSize = 0;
-	private int DEFAULT_TABLE_SIZE = 32;
+	private int DEFAULT_TABLE_SIZE = 16;
+	private int tableSize = DEFAULT_TABLE_SIZE;
+	private double DEFAULT_LOAD_FACTOR = 0.75;
+	private double loadFactor = DEFAULT_LOAD_FACTOR;
 	private int size = 0;
 	
 	public HashTable() {
-		tableSize = DEFAULT_TABLE_SIZE;
 		table = new Node[tableSize];
 	}
 	
@@ -41,12 +42,12 @@ public class HashTable {
 		table = new Node[size];
 	}
 	
-	//public HashTable(int size, float fillRatio) {
-	//}
-	
-	//public HashTable(Object key, Object value) {
-	//}
-	
+	public HashTable(int size, double loadFactor) {
+		tableSize = size;
+		table = new Node[size];
+		this.loadFactor = loadFactor;
+	}
+
 	public void clear( ) {
 		table = new Node[tableSize];
 	}
@@ -56,7 +57,7 @@ public class HashTable {
 	//}
 	
 	public boolean containsKey(Object key) {
-		int pos = getHash(key);                       
+		int pos = getHash(key, table.length);                       
         if (table[pos] == null) {
             return false;
         } else {
@@ -96,7 +97,11 @@ public class HashTable {
 	 * If key is not in the hash table, a null object is returned.
 	 */
 	public Object get(Object key) {
-		int pos = getHash(key);                       
+		return get(key, table);
+	}
+	
+	private Object get(Object key, Node[] table) {
+		int pos = getHash(key, table.length);                       
         if (table[pos] == null) {
             return null;
         } else {
@@ -132,7 +137,15 @@ public class HashTable {
 	returns the previous value associated with key if key is already in the hash table.
 	*/
 	public Object put(Object key, Object value) {
-        int pos = getHash(key);        
+		Object ret = put(key, value, table);
+		if (needRehash()) {
+			rehash();
+		}
+		return ret;
+	}
+	
+	private Object put(Object key, Object value, Node[] table) {
+        int pos = getHash(key, table.length);        
         Node node = new Node(key, value);                
         if (table[pos] == null) {
             table[pos] = node;
@@ -141,27 +154,38 @@ public class HashTable {
         } else {
         	Object ret = null;
         	Node curr = table[pos];
-        	while (true) {
+        	Node prev = table[pos];
+        	while (curr != null) {
         		if (curr.key.equals(key)) {
         			ret = curr.value;
         			curr.value = value;
         			return ret;
         		}
-        		if (curr.next == null) {
-        			break;
-        		}
+        		prev = curr;
         		curr = curr.next;
         	}
-        	curr.next = node;
+        	prev.next = node;
         	size++;
         	return ret;
         }    
 	}
+	
+	private boolean needRehash() {
+		return ((float)size/tableSize > loadFactor);
+	}
+	
 	/*
 	 * Increases the size of the hash table and rehashes all of its keys. 
 	 * */
-	public	void rehash( ) {
-		
+	private void rehash( ) {
+		Node[] newTable = new Node[tableSize * 2];
+		Enumeration keys = keys();
+		while(keys.hasMoreElements()) {
+			Object key = keys.nextElement();
+			put(key, get(key), newTable);
+		}
+		table = newTable;
+		tableSize = tableSize * 2;
 	}
 
 	/*
@@ -169,7 +193,7 @@ public class HashTable {
 	 * If key is not in the hash table, a null object is returned.
 	 * */
 	public 	Object remove(Object key) {
-		int pos = getHash(key);                       
+		int pos = getHash(key, tableSize);                       
         if (table[pos] == null) {
             return null;
         } else {
@@ -209,10 +233,10 @@ public class HashTable {
 		return "";
 	}
 	
-	private int getHash(Object object ) {
-        int hash = object.hashCode( ) % table.length;
+	private int getHash(Object object, int tableSize ) {
+        int hash = object.hashCode( ) % tableSize;
         if (hash < 0) {
-            hash += table.length;
+            hash += tableSize;
         }
         return hash;
     }
