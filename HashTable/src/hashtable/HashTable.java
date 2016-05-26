@@ -1,5 +1,6 @@
 package hashtable;
 
+import java.lang.reflect.Array;
 import java.util.Enumeration;
 
 /*
@@ -9,13 +10,13 @@ And keys equals () method will be used to identify correct key value pair in Has
 */
 
 
-public class HashTable {
+public class HashTable<K,V> {
 	class Node {
 	    Node next;
-	    Object key;
-	    Object value;
+	    K key;
+	    V value;
 	 
-	    public Node(Object key, Object value) {
+	    public Node(K key, V value) {
 	        this.key = key;
 	        this.value = value;
 	        next = null;
@@ -31,29 +32,38 @@ public class HashTable {
 	private double DEFAULT_LOAD_FACTOR = 0.75;
 	private double loadFactor = DEFAULT_LOAD_FACTOR;
 	private int size = 0;
+	Node tmpNode = new Node(null, null);
 	
 	public HashTable() {
-		table = new Node[DEFAULT_TABLE_SIZE];
+		//table = new Node[DEFAULT_TABLE_SIZE];	//Cannot create a generic array of HashTable<K,V>.Node
+		//table = (Node[]) new Node[DEFAULT_TABLE_SIZE];
+		table = (Node[]) Array.newInstance(tmpNode.getClass(), DEFAULT_TABLE_SIZE);
 	}
 	
 	public HashTable(int size) {
-		table = new Node[size];
+		//table = new Node[size];
+		//table = (Node[]) new Object[size];
+		table = (Node[]) Array.newInstance(tmpNode.getClass(), size);
 	}
 	
 	public HashTable(int size, double loadFactor) {
-		table = new Node[size];
+		//table = new Node[size];
+		//table = (Node[]) new Object[size];
+		table = (Node[]) Array.newInstance(tmpNode.getClass(), size);
 		this.loadFactor = loadFactor;
 	}
 
 	public void clear( ) {
-		table = new Node[table.length];
+		//table = new Node[table.length];
+		//table = (Node[]) new Object[table.length];
+		table = (Node[]) Array.newInstance(tmpNode.getClass(), table.length);
 	}
 	
 	//public Object clone( ) {
 	//	return null;
 	//}
 	
-	public boolean containsKey(Object key) {
+	public boolean containsKey(K key) {
 		int pos = getHash(key, table.length);                       
         if (table[pos] == null) {
             return false;
@@ -69,7 +79,7 @@ public class HashTable {
         }
 	}
 	
-	public boolean containsValue(Object value) {
+	public boolean containsValue(V value) {
 		for (int i = 0; i < table.length; i++) {
 			Node node = table[i];
 			while (node != null) {
@@ -93,11 +103,11 @@ public class HashTable {
 	 * Returns the object that contains the value associated with key. 
 	 * If key is not in the hash table, a null object is returned.
 	 */
-	public Object get(Object key) {
+	public V get(K key) {
 		return get(key, table);
 	}
 	
-	private Object get(Object key, Node[] table) {
+	private V get(K key, Node[] table) {
 		int pos = getHash(key, table.length);                       
         if (table[pos] == null) {
             return null;
@@ -133,15 +143,15 @@ public class HashTable {
 	 * Returns null if key isn't already in the hash table; 
 	 * returns the previous value associated with key if key is already in the hash table.
 	 */
-	public Object put(Object key, Object value) {
-		Object ret = put(key, value, table);
+	public V put(K key, V value) {
+		V ret = put(key, value, table);
 		if (needRehash()) {
 			rehash();
 		}
 		return ret;
 	}
 	
-	private Object put(Object key, Object value, Node[] table) {
+	private V put(K key, V value, Node[] table) {
         int pos = getHash(key, table.length);        
         Node node = new Node(key, value);                
         if (table[pos] == null) {
@@ -149,7 +159,7 @@ public class HashTable {
             size++;
             return null;
         } else {
-        	Object ret = null;
+        	V ret = null;
         	Node curr = table[pos];
         	Node prev = table[pos];
         	while (curr != null) {
@@ -175,10 +185,12 @@ public class HashTable {
 	 * Increases the size of the hash table and rehashes all of its keys. 
 	 * */
 	private void rehash( ) {
-		Node[] newTable = new Node[table.length * 2];
-		Enumeration keys = keys();
+		//Node[] newTable = new Node[table.length * 2];
+		//Node[] newTable = (Node[]) new Object[table.length * 2];
+		Node[] newTable = (Node[]) Array.newInstance(tmpNode.getClass(), table.length * 2);
+		Enumeration<K> keys = keys();
 		while(keys.hasMoreElements()) {
-			Object key = keys.nextElement();
+			K key = keys.nextElement();
 			put(key, get(key), newTable);
 		}
 		table = newTable;
@@ -188,7 +200,7 @@ public class HashTable {
 	 * Removes key and its value. Returns the value associated with key. 
 	 * If key is not in the hash table, a null object is returned.
 	 * */
-	public 	Object remove(Object key) {
+	public 	V remove(K key) {
 		int pos = getHash(key, table.length);                       
         if (table[pos] == null) {
             return null;
@@ -197,7 +209,7 @@ public class HashTable {
         	Node prev = table[pos];
         	while (true) {
         		if (curr.key.equals(key)) {
-        			Object ret = curr.value;
+        			V ret = curr.value;
         			if (curr == table[pos]) {
         				table[pos] = curr.next;
         			} else {
@@ -250,7 +262,7 @@ public class HashTable {
         }
     }
 	
-	class HashTableKeysEnumeration implements Enumeration {
+	class HashTableKeysEnumeration implements Enumeration<K> {
 		int currBasket = -1;
 		Node currNode = null;
 		
@@ -264,7 +276,7 @@ public class HashTable {
 		}
 
 		@Override
-		public Object nextElement() {
+		public K nextElement() {
 			if (currBasket == -1) {
 				int pos = 0;
 				while(pos <= table.length-1) {
@@ -296,7 +308,7 @@ public class HashTable {
 		}
 	}//HashTableKeysEnumeration
 	
-	class HashTableValuesEnumeration implements Enumeration {
+	class HashTableValuesEnumeration implements Enumeration<V> {
 		int currBasket = -1;
 		Node currNode = null;
 		
@@ -310,7 +322,7 @@ public class HashTable {
 		}
 
 		@Override
-		public Object nextElement() {
+		public V nextElement() {
 			if (currBasket == -1) {
 				int pos = 0;
 				while(pos <= table.length-1) {

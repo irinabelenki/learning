@@ -5,7 +5,7 @@ import java.util.Enumeration;
 public class Main {
 	
 	public static void main(String[] args) {
-		HashTable hashtable = new HashTable(10);
+		HashTable<Integer, String> hashtable = new HashTable<Integer, String>(10);
 		hashtable.put(2,  "key is 2");
 		hashtable.put(3,  "key is 3");
 		hashtable.put(12, "key is 12");
@@ -37,15 +37,14 @@ public class Main {
 		
 		hashtable.printHashTable();
 		
-		Enumeration en;
-		en = hashtable.keys();
-		while (en.hasMoreElements()) {
-			System.out.println("Key: " + en.nextElement());
+		Enumeration<Integer> keys = hashtable.keys();
+		while (keys.hasMoreElements()) {
+			System.out.println("Key: " + keys.nextElement());
 		}
 		
-		en = hashtable.elements();
-		while (en.hasMoreElements()) {
-			System.out.println("Value: " + en.nextElement());
+		Enumeration<String> values = hashtable.elements();
+		while (values.hasMoreElements()) {
+			System.out.println("Value: " + values.nextElement());
 		}
 	}
 }
