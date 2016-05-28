@@ -178,7 +178,9 @@ public class HashTable<K,V> {
 	}
 	
 	private boolean needRehash() {
-		return ((float)size/table.length > loadFactor);
+		float param = (float)(size) / table.length / (float)1.1;
+		System.out.println("needRehash: size: " + size + ", len: " + table.length + ", param: " + param);
+		return (param > loadFactor);
 	}
 	
 	/*
@@ -187,7 +189,10 @@ public class HashTable<K,V> {
 	private void rehash( ) {
 		//Node[] newTable = new Node[table.length * 2];
 		//Node[] newTable = (Node[]) new Object[table.length * 2];
-		Node[] newTable = (Node[]) Array.newInstance(tmpNode.getClass(), table.length * 2);
+		int newLength = (int)(size / loadFactor * 1.3);
+		System.out.println("rehash: newLength: " + newLength);
+		Node[] newTable = (Node[]) Array.newInstance(tmpNode.getClass(), newLength);
+		size = 0;
 		Enumeration<K> keys = keys();
 		while(keys.hasMoreElements()) {
 			K key = keys.nextElement();

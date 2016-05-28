@@ -8,6 +8,7 @@ public class Main {
 		HashTable<Integer, String> hashtable = new HashTable<Integer, String>(10);
 		hashtable.put(2,  "key is 2");
 		hashtable.put(3,  "key is 3");
+		hashtable.put(33, "key is 33");
 		hashtable.put(12, "key is 12");
 		hashtable.put(22, "key is 22");
 		hashtable.put(2,  "key is 2 again");
@@ -16,10 +17,12 @@ public class Main {
 		hashtable.put(-1, "key is -1");
 		hashtable.put(-11,"key is -11");
 		hashtable.put(0, "key is 0");
-				
+		hashtable.put(18, "key is 18");
+		
 		hashtable.printHashTable();
 		
-		hashtable.put(18, "key is 18");
+		hashtable.put(120, "key is 120");
+		hashtable.put(130, "key is 130");
 		
 		hashtable.printHashTable();
 		
