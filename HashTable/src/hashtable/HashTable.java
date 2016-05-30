@@ -57,6 +57,7 @@ public class HashTable<K,V> {
 		//table = new Node[table.length];
 		//table = (Node[]) new Object[table.length];
 		table = (Node[]) Array.newInstance(tmpNode.getClass(), table.length);
+		size = 0;
 	}
 	
 	//public Object clone( ) {
