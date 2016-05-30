@@ -65,7 +65,7 @@ public class HashTable<K,V> {
 	//}
 	
 	public boolean containsKey(K key) {
-		int pos = getHash(key, table.length);                       
+		int pos = getHash(key);
         if (table[pos] == null) {
             return false;
         } else {
@@ -105,11 +105,7 @@ public class HashTable<K,V> {
 	 * If key is not in the hash table, a null object is returned.
 	 */
 	public V get(K key) {
-		return get(key, table);
-	}
-	
-	private V get(K key, Node[] table) {
-		int pos = getHash(key, table.length);                       
+		int pos = getHash(key);
         if (table[pos] == null) {
             return null;
         } else {
@@ -145,15 +141,15 @@ public class HashTable<K,V> {
 	 * returns the previous value associated with key if key is already in the hash table.
 	 */
 	public V put(K key, V value) {
-		V ret = put(key, value, table);
+		V ret = putEntry(key, value);
 		if (needRehash()) {
 			rehash();
 		}
 		return ret;
 	}
 	
-	private V put(K key, V value, Node[] table) {
-        int pos = getHash(key, table.length);        
+	private V putEntry(K key, V value) {
+        int pos = getHash(key);
         Node node = new Node(key, value);                
         if (table[pos] == null) {
             table[pos] = node;
@@ -188,18 +184,20 @@ public class HashTable<K,V> {
 	 * Increases the size of the hash table and rehashes all of its keys. 
 	 * */
 	private void rehash( ) {
+		Node[] oldTable = table;
 		//Node[] newTable = new Node[table.length * 2];
 		//Node[] newTable = (Node[]) new Object[table.length * 2];
 		int newLength = (int)(size / loadFactor * 1.3);
 		System.out.println("rehash: newLength: " + newLength);
-		Node[] newTable = (Node[]) Array.newInstance(tmpNode.getClass(), newLength);
+		table = (Node[]) Array.newInstance(tmpNode.getClass(), newLength);
 		size = 0;
-		Enumeration<K> keys = keys();
-		while(keys.hasMoreElements()) {
-			K key = keys.nextElement();
-			put(key, get(key), newTable);
+		for (int i = 0; i < oldTable.length; i++) {
+			Node curr = oldTable[i];
+			while (curr != null) {
+				put(curr.key, curr.value);
+				curr = curr.next;
+			}
 		}
-		table = newTable;
 	}
 
 	/*
@@ -207,7 +205,7 @@ public class HashTable<K,V> {
 	 * If key is not in the hash table, a null object is returned.
 	 * */
 	public 	V remove(K key) {
-		int pos = getHash(key, table.length);                       
+		int pos = getHash(key);                       
         if (table[pos] == null) {
             return null;
         } else {
@@ -247,10 +245,10 @@ public class HashTable<K,V> {
 		return "";
 	}
 	
-	private int getHash(Object object, int tableSize ) {
-        int hash = object.hashCode( ) % tableSize;
+	private int getHash(Object object ) {
+        int hash = object.hashCode( ) % table.length;
         if (hash < 0) {
-            hash += tableSize;
+            hash += table.length;
         }
         return hash;
     }
