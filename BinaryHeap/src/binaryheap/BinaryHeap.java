@@ -9,19 +9,29 @@ class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 	private static final int d = 2;//number of children each node has
 	private int heapSize;
 	private E[] heap;
+	private Comparator<? super E> comparator;
 
 	public BinaryHeap(int capacity) {
 		heapSize = 0;
+		heap = (E[]) new Comparable[capacity + 1];
+
+		Comparator<E> comp = new Comparator<E>() {
+			@Override
+			public int compare(E lhs, E rhs) {
+				return lhs.compareTo(rhs);
+			}
+		};
+		this.comparator = comp;
+	}
+	
+	public BinaryHeap(int capacity, Comparator<? super E> comp) {
+		heapSize = 0;
 		heap = (E[])new Comparable[capacity + 1]; 
-		Arrays.fill(heap, -1);
+		comparator = comp;
 	}
 
 	public boolean isEmpty() {
 		return heapSize == 0;
-	}
-
-	public boolean isFull() {
-		return heapSize == heap.length;
 	}
 
 	public void makeEmpty() {
@@ -39,9 +49,9 @@ class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
 	/** Function to insert element */
 	public boolean insert(E x) {
-		if (isFull()) {
-			return false;
-		}
+		if (heapSize >= heap.length - 1) {
+            heap = Arrays.copyOf(heap, heap.length * 2);
+        }
 		/** Percolate up **/
 		heap[heapSize++] = x;
 		heapifyUp(heapSize - 1);
@@ -77,7 +87,7 @@ class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 	/** Function heapifyUp **/
 	private void heapifyUp(int childInd) {
 		E tmp = heap[childInd];
-		while (childInd > 0 && tmp.compareTo(heap[parent(childInd)]) < 0) {
+		while (childInd > 0 && comparator.compare(tmp, heap[parent(childInd)]) < 0) {
 			heap[childInd] = heap[parent(childInd)];
 			childInd = parent(childInd);
 		}
@@ -90,7 +100,7 @@ class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 		E tmp = heap[ind];
 		while (kthChildIndex(ind, 1) < heapSize) {
 			childPos = minChild(ind);
-			if (heap[childPos].compareTo(tmp) < 0) {
+			if (comparator.compare(heap[childPos], tmp) < 0) {
 				heap[ind] = heap[childPos];
 			}
 			else {
@@ -107,7 +117,7 @@ class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 		int k = 2;
 		int pos = kthChildIndex(ind, k);
 		while ((k <= d) && (pos < heapSize)) {
-			if (heap[pos].compareTo(heap[bestChildPos]) < 0) {
+			if (comparator.compare(heap[pos], heap[bestChildPos]) < 0) {
 				bestChildPos = pos;
 			}
 			pos = kthChildIndex(ind, k++);

@@ -20,12 +20,14 @@ public class Main {
 	}
 	
 	public static void tryPriorityQueue() {
-		PriorityQueue<Integer> priorityQueue = new BinaryHeap<Integer>(10);
+		PriorityQueue<Integer> priorityQueue = new BinaryHeap<Integer>(5);
 		priorityQueue.add(6);
 		priorityQueue.add(5);
 		priorityQueue.add(1);
 		priorityQueue.add(10);
 		priorityQueue.add(11);
+		priorityQueue.add(3);
+		priorityQueue.add(2);
 		((BinaryHeap<Integer>)priorityQueue).printHeap();
 		
 		System.out.println(priorityQueue.contains(5));
@@ -35,7 +37,5 @@ public class Main {
 		
 		priorityQueue.remove(11);
 		((BinaryHeap<Integer>)priorityQueue).printHeap();
-		
-		
 	}
 }

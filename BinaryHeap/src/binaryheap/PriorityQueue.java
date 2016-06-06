@@ -3,7 +3,7 @@ package binaryheap;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public interface PriorityQueue<E> {  
+public interface PriorityQueue<E> {
     
     /*Inserts the specified element into this priority queue.*/
     boolean	add(E e);
